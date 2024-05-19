@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 public class Bank implements BankInterface{
 	private LinkedHashMap<Long, Account> accounts; // object reference
   private static long counter = 0;
-	private final Object lock = new Object();
+	private final static Object lock = new Object();
 
 	public Bank() {
 		// complete the function
@@ -17,34 +17,29 @@ public class Bank implements BankInterface{
 		return this.accounts.get(accountNumber);
 	}
 	
-	private static long Counter(){
-		return counter++;
-		
-	}
 
+	private static long Counter(){
+			synchronized(lock) {
+				return counter++;
+			}
+		}
+		
 	public Long openCommercialAccount(Company company, int pin, double startingDeposit) {
 		//complete the function
-		
-		synchronized (lock) {
-      Long accountNumber = Bank.Counter();
-    
-		
+    Long accountNumber = Bank.Counter();
 		Account newCommercialAcc = new CommercialAccount(company, accountNumber, pin, startingDeposit);
 		this.accounts.put(accountNumber,newCommercialAcc);
 		return accountNumber;
-		}
+		
 	}
 
 	public Long openConsumerAccount(Person person, int pin, double startingDeposit) {
 		//complete the function
-		synchronized (lock) {
-      Long accountNumber = Bank.Counter();
-    
-		
+		Long accountNumber = Bank.Counter();
 		Account newConsumerAcc = new ConsumerAccount(person, accountNumber, pin, startingDeposit);
 		this.accounts.put(accountNumber,newConsumerAcc);
 		return accountNumber;
-		}
+		
 	}
 
 	public boolean authenticateUser(Long accountNumber, int pin) {
